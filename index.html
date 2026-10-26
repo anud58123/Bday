@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>For My Cutiee Rabbit 🐰💖</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Fredoka:wght@400;600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            rosepink: {
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              200: '#fecdd3',
+              300: '#fda4af',
+              400: '#fb7185',
+              500: '#f43f5e',
+              600: '#e11d48',
+            },
+            softgold: '#d4af37',
+            cream: '#fffaf6',
+          },
+          fontFamily: {
+            cursive: ['"Dancing Script"', 'cursive'],
+            rounded: ['"Fredoka"', 'sans-serif'],
+            sans: ['"Poppins"', 'sans-serif'],
+          },
+          animation: {
+            'float': 'float 4s ease-in-out infinite',
+            'pulse-slow': 'pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-gentle': 'bounceGentle 2s infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+            bounceGentle: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-6px)' },
+            },
+            glow: {
+              '0%': { boxShadow: '0 0 10px rgba(244, 63, 94, 0.4), 0 0 20px rgba(212, 175, 55, 0.3)' },
+              '100%': { boxShadow: '0 0 22px rgba(244, 63, 94, 0.8), 0 0 35px rgba(212, 175, 55, 0.6)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #fff0f3 0%, #ffe4e6 50%, #fecdd3 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: 'Poppins', sans-serif;
+      user-select: none;
+    }
+
+    /* Ambient Floating Particles Background */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Envelope styling */
+    .envelope-wrapper {
+      perspective: 1000px;
+    }
+
+    .envelope {
+      width: 100%;
+      max-width: 380px;
+      height: 250px;
+      position: relative;
+      background-color: #f43f5e;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+      box-shadow: 0 15px 35px rgba(225, 29, 72, 0.25);
+      transition: all 0.6s ease;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 190px solid transparent;
+      border-right: 190px solid transparent;
+      border-top: 140px solid #fb7185;
+      transform-origin: top;
+      transition: transform 0.6s ease-in-out, z-index 0.6s ease;
+      z-index: 3;
+    }
+
+    @media (max-width: 420px) {
+      .envelope {
+        max-width: 310px;
+        height: 210px;
+      }
+      .envelope-flap {
+        border-left-width: 155px;
+        border-right-width: 155px;
+        border-top-width: 115px;
+      }
+    }
+
+    .envelope.open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 190px solid #f43f5e;
+      border-right: 190px solid #f43f5e;
+      border-top: 125px solid transparent;
+      border-bottom: 125px solid #e11d48;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+      z-index: 2;
+    }
+
+    @media (max-width: 420px) {
+      .envelope-pocket {
+        border-left-width: 155px;
+        border-right-width: 155px;
+        border-top-width: 105px;
+        border-bottom-width: 105px;
+      }
+    }
+
+    /* Stamp of Love Wax Seal */
+    .wax-stamp {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -30%);
+      width: 78px;
+      height: 78px;
+      background: radial-gradient(circle, #e11d48 0%, #9f1239 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(159, 18, 57, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      z-index: 5;
+      border: 3px solid #fecdd3;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .wax-stamp:hover {
+      transform: translate(-50%, -30%) scale(1.08);
+    }
+
+    /* Flying Doves Container */
+    .dove-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 50;
+      overflow: hidden;
+    }
+
+    .dove {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      animation: flyAcross 8s linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes flyAcross {
+      0% {
+        transform: translate(-100px, 80vh) scale(0.6) rotate(-10deg);
+        opacity: 0;
+      }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% {
+        transform: translate(110vw, -100px) scale(1.1) rotate(10deg);
+        opacity: 0;
+      }
+    }
+
+    /* Shimmer Text Effect */
+    .shimmer-gold {
+      background: linear-gradient(90deg, #d4af37 0%, #fff3a8 50%, #d4af37 100%);
+      background-size: 200% auto;
+      color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: shine 3s linear infinite;
+    }
+
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+  </style>
+</head>
+
+<body class="flex flex-col items-center justify-center min-h-screen relative p-4">
+
+  <!-- Canvas for Ambient Background Floating Hearts Particles -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Audio Toggle Floating Button -->
+  <button id="audio-toggle" onclick="toggleAudio()" class="fixed top-5 right-5 z-50 bg-white/80 backdrop-blur-md text-rosepink-600 p-3 rounded-full shadow-lg border border-rosepink-200 hover:scale-110 transition-transform duration-200 flex items-center justify-center w-12 h-12">
+    <i id="audio-icon" class="fas fa-music text-xl"></i>
+  </button>
+
+  <!-- Developer Override / Preview Switch (Fixed Bottom Left) -->
+  <div class="fixed bottom-4 left-4 z-50 flex items-center bg-white/90 backdrop-blur-md px-3 py-2 rounded-full shadow-md border border-rosepink-200 text-xs text-gray-600 font-sans">
+    <span class="mr-2 font-medium text-rosepink-600"><i class="fas fa-magic mr-1"></i> Preview Mode:</span>
+    <select id="state-selector" onchange="forceState(this.value)" class="bg-rosepink-50 border border-rosepink-200 text-rosepink-700 rounded-lg px-2 py-1 focus:outline-none font-semibold cursor-pointer">
+      <option value="auto">Live Clock Lock (Oct 27, 2026)</option>
+      <option value="1">State 1: Countdown</option>
+      <option value="2">State 2: Sealed Card</option>
+      <option value="3">State 3: Welcome Page</option>
+      <option value="4">State 4: Birthday Wish</option>
+    </select>
+  </div>
+
+
+  <!-- ================= STATE 1: COUNTDOWN TIMER PAGE ================= -->
+  <main id="state-1" class="state-container z-10 w-full max-w-xl text-center space-y-8 py-8 transition-all duration-500">
+    <!-- Header Badge -->
+    <div class="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-md border border-rosepink-300 px-5 py-2 rounded-full shadow-sm animate-bounce-gentle">
+      <span class="text-xl">🐰</span>
+      <span class="text-xs sm:text-sm font-semibold text-rosepink-600 tracking-wide uppercase">Special Surprise Unlocking Soon</span>
+      <span class="text-xl">✨</span>
+    </div>
+
+    <!-- Title & Teaser -->
+    <div class="space-y-3">
+      <h1 class="font-cursive text-5xl sm:text-6xl md:text-7xl font-bold text-rosepink-600 drop-shadow-sm">
+        For My Cutiee Rabbit
+      </h1>
+      <p class="text-gray-600 font-sans text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+        Something ultra-special is waiting for you... Hold tight, my love! 💖
+      </p>
+    </div>
+
+    <!-- Countdown Clock Card Container -->
+    <div class="grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto bg-white/70 backdrop-blur-md p-4 sm:p-6 rounded-3xl shadow-xl border border-rosepink-200">
+      <!-- Days -->
+      <div class="bg-gradient-to-b from-rosepink-50 to-rosepink-100/60 p-3 sm:p-4 rounded-2xl border border-rosepink-200/50 flex flex-col items-center">
+        <span id="days" class="font-rounded font-bold text-2xl sm:text-4xl text-rosepink-600">00</span>
+        <span class="text-[10px] sm:text-xs uppercase font-semibold text-rosepink-400 mt-1">Days</span>
+      </div>
+      <!-- Hours -->
+      <div class="bg-gradient-to-b from-rosepink-50 to-rosepink-100/60 p-3 sm:p-4 rounded-2xl border border-rosepink-200/50 flex flex-col items-center">
+        <span id="hours" class="font-rounded font-bold text-2xl sm:text-4xl text-rosepink-600">00</span>
+        <span class="text-[10px] sm:text-xs uppercase font-semibold text-rosepink-400 mt-1">Hours</span>
+      </div>
+      <!-- Minutes -->
+      <div class="bg-gradient-to-b from-rosepink-50 to-rosepink-100/60 p-3 sm:p-4 rounded-2xl border border-rosepink-200/50 flex flex-col items-center">
+        <span id="minutes" class="font-rounded font-bold text-2xl sm:text-4xl text-rosepink-600">00</span>
+        <span class="text-[10px] sm:text-xs uppercase font-semibold text-rosepink-400 mt-1">Mins</span>
+      </div>
+      <!-- Seconds -->
+      <div class="bg-gradient-to-b from-rosepink-50 to-rosepink-100/60 p-3 sm:p-4 rounded-2xl border border-rosepink-200/50 flex flex-col items-center">
+        <span id="seconds" class="font-rounded font-bold text-2xl sm:text-4xl text-rosepink-600">00</span>
+        <span class="text-[10px] sm:text-xs uppercase font-semibold text-rosepink-400 mt-1">Secs</span>
+      </div>
+    </div>
+
+    <!-- Cute Footer Note -->
+    <div class="text-xs text-rosepink-500 font-medium italic animate-pulse-slow">
+      <i class="fas fa-heart text-rosepink-400 mr-1"></i> Target Unlock: 27th Oct 2026, 12:00 AM IST
+    </div>
+  </main>
+
+
+  <!-- ================= STATE 2: ENVELOPE PAMPHLET PAGE ================= -->
+  <main id="state-2" class="state-container hidden z-10 w-full max-w-md flex flex-col items-center justify-center space-y-8 py-6 transition-all duration-500">
+    <div class="text-center space-y-2">
+      <h2 class="font-cursive text-4xl sm:text-5xl font-bold text-rosepink-600">A Secret Letter For You</h2>
+      <p class="text-xs sm:text-sm text-gray-600">Click the <span class="text-rosepink-600 font-semibold">Stamp of Love</span> to unseal!</p>
+    </div>
+
+    <!-- Interactive Pink Envelope Container -->
+    <div class="envelope-wrapper my-6">
+      <div id="envelope" class="envelope">
+        <div class="envelope-flap"></div>
+        <div class="envelope-pocket"></div>
+        
+        <!-- Wax Stamp Seal Button -->
+        <button id="stamp-btn" onclick="openEnvelope()" class="wax-stamp animate-glow" aria-label="Stamp of Love">
+          <i class="fas fa-heart text-2xl text-rosepink-100"></i>
+        </button>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- ================= STATE 3: DEDICATED WELCOME & DIALOG PAGE ================= -->
+  <main id="state-3" class="state-container hidden z-20 w-full max-w-md transition-all duration-500">
+    <div class="bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-rosepink-200 text-center relative overflow-hidden space-y-5">
+      <!-- Top Decorative Glow -->
+      <div class="absolute -top-10 -right-10 w-28 h-28 bg-rosepink-200 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Cute Animated Blushing Bunny SVG -->
+      <div class="w-32 h-32 mx-auto relative animate-float">
+        <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-md">
+          <!-- Ears -->
+          <ellipse cx="75" cy="45" rx="14" ry="40" fill="#FFE4E6" stroke="#FB7185" stroke-width="4" transform="rotate(-10 75 45)" />
+          <ellipse cx="75" cy="45" rx="8" ry="28" fill="#FDA4AF" transform="rotate(-10 75 45)" />
+          
+          <ellipse cx="125" cy="45" rx="14" ry="40" fill="#FFE4E6" stroke="#FB7185" stroke-width="4" transform="rotate(10 125 45)" />
+          <ellipse cx="125" cy="45" rx="8" ry="28" fill="#FDA4AF" transform="rotate(10 125 45)" />
+
+          <!-- Head -->
+          <circle cx="100" cy="115" r="55" fill="#FFFFFF" stroke="#FB7185" stroke-width="4"/>
+          
+          <!-- Eyes -->
+          <path d="M 80 105 Q 87 97 94 105" fill="none" stroke="#E11D48" stroke-width="4" stroke-linecap="round"/>
+          <path d="M 106 105 Q 113 97 120 105" fill="none" stroke="#E11D48" stroke-width="4" stroke-linecap="round"/>
+          
+          <!-- Cheeks -->
+          <circle cx="76" cy="118" r="9" fill="#FDA4AF" opacity="0.8"/>
+          <circle cx="124" cy="118" r="9" fill="#FDA4AF" opacity="0.8"/>
+          
+          <!-- Nose & Mouth -->
+          <polygon points="96,114 104,114 100,119" fill="#F43F5E"/>
+          <path d="M 95 122 Q 100 126 105 122" fill="none" stroke="#E11D48" stroke-width="3" stroke-linecap="round"/>
+
+          <!-- Heart Floating beside ear -->
+          <path d="M 140 70 C 140 65, 145 60, 150 65 C 155 60, 160 65, 160 70 C 160 78, 150 85, 150 85 C 150 85, 140 78, 140 70 Z" fill="#F43F5E" />
+        </svg>
+      </div>
+
+      <!-- Main Welcome Heading -->
+      <h2 class="font-cursive text-4xl sm:text-5xl font-bold text-rosepink-600 leading-tight">
+        Welcome to my Website Rabbit 🐰💖
+      </h2>
+
+      <!-- Question Text -->
+      <p class="font-rounded font-medium text-gray-700 text-lg sm:text-xl pt-1">
+        Are you interested to go inside?
+      </p>
+
+      <!-- Action Buttons Container -->
+      <div id="button-area" class="relative min-h-[70px] flex items-center justify-center space-x-6 pt-2">
+        <!-- YES Button -->
+        <button id="yes-btn" onclick="acceptInvitation()" class="px-8 py-3.5 bg-gradient-to-r from-rosepink-500 to-rosepink-600 text-white font-rounded font-semibold text-lg rounded-full shadow-lg hover:shadow-rosepink-300/50 hover:scale-110 active:scale-95 transition-all duration-200 z-10">
+          YES! 🥰
+        </button>
+
+        <!-- NO Button (Evasive) -->
+        <button id="no-btn" onmouseover="moveNoButton()" onclick="moveNoButton()" ontouchstart="moveNoButton()" class="px-7 py-3.5 bg-gray-100 text-gray-500 font-rounded font-medium text-lg rounded-full border border-gray-200 shadow-sm transition-all duration-150 absolute right-4">
+          No 🙈
+        </button>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- ================= STATE 4: FINAL CELEBRATION REVEAL ================= -->
+  <main id="state-4" class="state-container hidden z-10 w-full max-w-2xl text-center space-y-8 py-6 transition-all duration-700">
+    <!-- Flying Doves Canvas Overlay Container -->
+    <div id="dove-layer" class="dove-container"></div>
+
+    <!-- Main Birthday Banner Card -->
+    <div class="bg-white/85 backdrop-blur-md rounded-3xl p-6 sm:p-10 shadow-2xl border border-rosepink-200 space-y-6 relative overflow-hidden">
+      
+      <!-- Sparkle Accents -->
+      <div class="absolute top-4 left-4 text-2xl animate-spin" style="animation-duration: 6s;">✨</div>
+      <div class="absolute bottom-4 right-4 text-2xl animate-spin" style="animation-duration: 8s;">✨</div>
+
+      <!-- Top Badge -->
+      <div class="inline-block bg-rosepink-100 text-rosepink-600 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide uppercase">
+        👑 Today Is Your Day 👑
+      </div>
+
+      <!-- Main Heading Message -->
+      <h1 class="font-cursive text-5xl sm:text-7xl md:text-8xl font-bold text-rosepink-600 leading-tight drop-shadow-md">
+        Happy Birthday My Little Cutiee Rabbit
+      </h1>
+
+      <p class="shimmer-gold font-cursive text-2xl sm:text-3xl font-bold">
+        🐰👑🎂💖
+      </p>
+
+      <p class="text-gray-600 text-sm sm:text-base max-w-lg mx-auto leading-relaxed font-sans">
+        May your year ahead be as sweet, fluffy, and full of joy as you are! Thank you for bringing so much happiness and love into my life every single day.
+      </p>
+
+      <!-- Romantic Photo/Memory Card Placeholder -->
+      <div class="max-w-md mx-auto bg-gradient-to-br from-rosepink-50 to-cream p-4 rounded-2xl border-2 border-dashed border-rosepink-300 shadow-inner space-y-3">
+        <div class="h-44 sm:h-52 rounded-xl bg-rosepink-100 flex flex-col items-center justify-center border border-rosepink-200 relative overflow-hidden group">
+          <i class="fas fa-heart text-5xl text-rosepink-300 group-hover:scale-125 transition-transform duration-300"></i>
+          <span class="text-xs font-medium text-rosepink-500 mt-2">Place your favorite romantic photo here 💕</span>
+          <div class="absolute inset-0 bg-gradient-to-t from-rosepink-500/20 to-transparent pointer-events-none"></div>
+        </div>
+        <div class="text-left space-y-1 px-1">
+          <h4 class="font-rounded font-semibold text-rosepink-600 text-sm">A Little Birthday Promise 💌</h4>
+          <p class="text-xs text-gray-500">I promise to always keep you smiling, give you endless hugs, and love you forever!</p>
+        </div>
+      </div>
+
+      <!-- Interactive Hug / Replay Button -->
+      <div class="pt-2">
+        <button onclick="triggerConfettiBurst()" class="px-8 py-3.5 bg-gradient-to-r from-rosepink-500 via-rosepink-600 to-rosepink-500 text-white font-rounded font-semibold text-base rounded-full shadow-lg hover:shadow-rosepink-300/60 hover:scale-105 active:scale-95 transition-all duration-300">
+          Send Unlimited Hugs & Love! 💖🤗
+        </button>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    /* ------------------------------------------------------------------------
+       1. GLOBAL CONFIG & STATE MANAGEMENT
+       ------------------------------------------------------------------------ */
+    // Target Unlock Date: October 27, 2026 00:00:00 IST (UTC+05:30)
+    const TARGET_DATE = new Date("2026-10-27T00:00:00+05:30").getTime();
+    
+    let currentState = 1;
+    let isAutoMode = true;
+    let audioContext = null;
+    let isPlayingAudio = false;
+    let audioInterval = null;
+
+    // Elements
+    const stateContainers = {
+      1: document.getElementById('state-1'),
+      2: document.getElementById('state-2'),
+      3: document.getElementById('state-3'),
+      4: document.getElementById('state-4'),
+    };
+
+    /* ------------------------------------------------------------------------
+       2. COUNTDOWN TIMER LOGIC
+       ------------------------------------------------------------------------ */
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = TARGET_DATE - now;
+
+      if (distance <= 0) {
+        // Target Date reached! Automatically go to State 2
+        document.getElementById('days').innerText = "00";
+        document.getElementById('hours').innerText = "00";
+        document.getElementById('minutes').innerText = "00";
+        document.getElementById('seconds').innerText = "00";
+
+        if (isAutoMode && currentState === 1) {
+          transitionToState(2);
+        }
+        return;
+      }
+
+      // Time calculations
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById('days').innerText = String(days).padStart(2, '0');
+      document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+      document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+    }
+
+    // Run timer loop every second
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    /* ------------------------------------------------------------------------
+       3. STATE TRANSITIONS & OVERRIDE SWITCH
+       ------------------------------------------------------------------------ */
+    function transitionToState(nextState) {
+      currentState = nextState;
+
+      // Hide all states with fade effect
+      Object.keys(stateContainers).forEach(key => {
+        const el = stateContainers[key];
+        if (parseInt(key) === nextState) {
+          el.classList.remove('hidden');
+          setTimeout(() => el.classList.remove('opacity-0'), 20);
+        } else {
+          el.classList.add('opacity-0');
+          el.classList.add('hidden');
+        }
+      });
+
+      // Special triggers upon entering specific states
+      if (nextState === 3) {
+        triggerConfettiBurst(30);
+      }
+      if (nextState === 4) {
+        launchFlyingDoves();
+        triggerConfettiBurst(200);
+        startRomanticMelody();
+      }
+    }
+
+    function forceState(value) {
+      if (value === 'auto') {
+        isAutoMode = true;
+        // Check if countdown expired, else show state 1
+        const now = new Date().getTime();
+        if (TARGET_DATE - now <= 0) {
+          transitionToState(2);
+        } else {
+          transitionToState(1);
+        }
+      } else {
+        isAutoMode = false;
+        transitionToState(parseInt(value));
+      }
+    }
+
+    /* ------------------------------------------------------------------------
+       4. STATE 2: ENVELOPE OPENING -> STATE 3
+       ------------------------------------------------------------------------ */
+    function openEnvelope() {
+      const envelope = document.getElementById('envelope');
+      const stampBtn = document.getElementById('stamp-btn');
+      
+      // Animate stamp tap
+      stampBtn.style.transform = 'translate(-50%, -30%) scale(0.8)';
+      setTimeout(() => {
+        stampBtn.style.opacity = '0';
+        stampBtn.style.pointerEvents = 'none';
+        envelope.classList.add('open');
+      }, 150);
+
+      // Trigger mini heart burst
+      confetti({
+        particleCount: 35,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ['#f43f5e', '#fda4af', '#fff']
+      });
+
+      // Directly transition to State 3 (Welcome Page)
+      setTimeout(() => {
+        transitionToState(3);
+        document.getElementById('state-selector').value = '3';
+      }, 700);
+    }
+
+    /* ------------------------------------------------------------------------
+       5. STATE 3: EVASIVE "NO" BUTTON LOGIC
+       ------------------------------------------------------------------------ */
+    function moveNoButton() {
+      const noBtn = document.getElementById('no-btn');
+      
+      // Calculate random coordinates across screen/container
+      const randomX = (Math.random() - 0.5) * 240;
+      const randomY = (Math.random() - 0.5) * 160;
+
+      noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+    }
+
+    function acceptInvitation() {
+      transitionToState(4);
+      document.getElementById('state-selector').value = '4';
+    }
+
+    /* ------------------------------------------------------------------------
+       6. STATE 4: FLYING DOVES & CONFETTI REVEAL
+       ------------------------------------------------------------------------ */
+    function launchFlyingDoves() {
+      const container = document.getElementById('dove-layer');
+      container.innerHTML = ''; // Clear previous
+
+      const doveSVG = `
+        <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md">
+          <path d="M 20 50 Q 35 20 60 35 Q 85 20 80 50 Q 75 70 50 75 Q 30 75 20 50 Z" fill="#FFFFFF" stroke="#FCE7F3" stroke-width="2"/>
+          <path d="M 40 45 Q 25 10 55 15 Q 50 35 40 45 Z" fill="#FFF1F2"/>
+          <path d="M 78 52 C 78 48, 83 45, 87 49 C 91 45, 96 48, 96 52 C 96 58, 87 63, 87 63 C 87 63, 78 58, 78 52 Z" fill="#E11D48"/>
+        </svg>
+      `;
+
+      for (let i = 0; i < 6; i++) {
+        const dove = document.createElement('div');
+        dove.className = 'dove';
+        dove.innerHTML = doveSVG;
+        
+        const delay = i * 1.3;
+        const duration = 7 + Math.random() * 3;
+        const topPos = 15 + Math.random() * 60;
+
+        dove.style.animationDelay = `${delay}s`;
+        dove.style.animationDuration = `${duration}s`;
+        dove.style.top = `${topPos}vh`;
+
+        container.appendChild(dove);
+      }
+    }
+
+    function triggerConfettiBurst(count = 150) {
+      const defaults = {
+        origin: { y: 0.7 },
+        colors: ['#f43f5e', '#fb7185', '#fecdd3', '#d4af37', '#ffffff']
+      };
+
+      function fire(particleRatio, opts) {
+        confetti({
+          ...defaults,
+          ...opts,
+          particleCount: Math.floor(count * particleRatio)
+        });
+      }
+
+      fire(0.25, { spread: 26, startVelocity: 55 });
+      fire(0.2, { spread: 60 });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+      fire(0.1, { spread: 120, startVelocity: 45 });
+    }
+
+    /* ------------------------------------------------------------------------
+       7. WEB AUDIO API - PROCEDURAL ROMANTIC MELODY
+       ------------------------------------------------------------------------ */
+    function initAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playNote(freq, duration, delay = 0) {
+      if (!audioContext || audioContext.state !== 'running') return;
+
+      setTimeout(() => {
+        try {
+          const osc = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+
+          gain.gain.setValueAtTime(0, audioContext.currentTime);
+          gain.gain.linearRampToValueAtTime(0.12, audioContext.currentTime + 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(audioContext.destination);
+
+          osc.start();
+          osc.stop(audioContext.currentTime + duration);
+        } catch (e) {
+          console.error(e);
+        }
+      }, delay);
+    }
+
+    function startRomanticMelody() {
+      initAudio();
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+
+      isPlayingAudio = true;
+      document.getElementById('audio-icon').className = 'fas fa-volume-up text-xl text-rosepink-600';
+
+      const notes = [
+        261.63, 329.63, 392.00, 523.25,
+        293.66, 349.23, 440.00, 587.33,
+        329.63, 392.00, 493.88, 659.25
+      ];
+
+      let step = 0;
+      if (audioInterval) clearInterval(audioInterval);
+      
+      audioInterval = setInterval(() => {
+        if (!isPlayingAudio) return;
+        const note = notes[step % notes.length];
+        playNote(note, 1.8, 0);
+        step++;
+      }, 600);
+    }
+
+    function toggleAudio() {
+      initAudio();
+      const icon = document.getElementById('audio-icon');
+
+      if (isPlayingAudio) {
+        isPlayingAudio = false;
+        if (audioInterval) clearInterval(audioInterval);
+        icon.className = 'fas fa-volume-mute text-xl text-gray-400';
+      } else {
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        startRomanticMelody();
+      }
+    }
+
+    /* ------------------------------------------------------------------------
+       8. BACKGROUND FLOATING PARTICLES CANVAS
+       ------------------------------------------------------------------------ */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + Math.random() * 100;
+        this.size = Math.random() * 12 + 6;
+        this.speedY = Math.random() * 0.8 + 0.3;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.opacity = Math.random() * 0.5 + 0.2;
+        this.isHeart = Math.random() > 0.4;
+      }
+
+      update() {
+        this.y -= this.speedY;
+        this.x += this.speedX;
+        if (this.y < -20) this.reset();
+      }
+
+      draw() {
+        ctx.fillStyle = `rgba(244, 63, 94, ${this.opacity})`;
+        ctx.beginPath();
+        if (this.isHeart) {
+          const topCurveHeight = this.size * 0.3;
+          ctx.moveTo(this.x, this.y + topCurveHeight);
+          ctx.bezierCurveTo(this.x, this.y, this.x - this.size / 2, this.y, this.x - this.size / 2, this.y + topCurveHeight);
+          ctx.bezierCurveTo(this.x - this.size / 2, this.y + (this.size + topCurveHeight) / 2, this.x, this.y + this.size, this.x, this.y + this.size);
+          ctx.bezierCurveTo(this.x, this.y + (this.size + topCurveHeight) / 2, this.x + this.size / 2, this.y + (this.size + topCurveHeight) / 2, this.x + this.size / 2, this.y + topCurveHeight);
+          ctx.bezierCurveTo(this.x + this.size / 2, this.y, this.x, this.y, this.x, this.y + topCurveHeight);
+        } else {
+          ctx.arc(this.x, this.y, this.size / 3, 0, Math.PI * 2);
+        }
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 35; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+  </script>
+</body>
+</html>
